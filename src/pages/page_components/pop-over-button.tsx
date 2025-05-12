@@ -1,8 +1,8 @@
 import {Popover, Button} from "@radix-ui/themes";
 
 interface PopOverButtonProps{
-  buttonInner : string,
-  children: never,
+  buttonInner : any,
+  children: any,
 }
 
 function PopOverButton(props : PopOverButtonProps) {

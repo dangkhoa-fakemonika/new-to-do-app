@@ -6,7 +6,7 @@ import AddTaskBody from "@/pages/page_components/add-task-body.tsx";
 import type {Task} from "@/data_classes/Task-class.ts";
 
 interface HomeToolBarProps {
-  onAddTask: ((new_task: Task) => void)
+  onAddTask: (new_task: Task, action? : "new" | "update" | "delete") => void,
 }
 
 function HomeToolBar(props: HomeToolBarProps) {
@@ -16,9 +16,6 @@ function HomeToolBar(props: HomeToolBarProps) {
       <PopOverButton buttonInner={<><PlusIcon/> Add a task</>}>
         <AddTaskBody onAddTask={props.onAddTask}/>
       </PopOverButton>
-      <Button>
-        Select all tasks
-      </Button>
       <Button>
         Delete tasks
       </Button>

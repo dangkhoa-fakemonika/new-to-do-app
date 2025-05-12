@@ -1,60 +1,24 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TaskHome from "./pages/main-menu.tsx";
-import {useEffect, useMemo, useState} from "react";
-import {type Task, TaskSchema} from "@/data_classes/Task-class.ts";
-import { TaskManagerContext } from './context';
 import HeaderBar from "./header-bar.tsx";
 import './index.css'
+import RandomStuff from "@/pages/random-stuff.tsx";
+import ArchivedTasks from "@/pages/archived.tsx";
 
 function App() {
 
-  const localStorageName = "to_do_list_data";
-  const [taskList, setTaskList] = useState<Task[]>(() => {
-    const getData = localStorage.getItem(localStorageName);
-    if (getData == null){
-      localStorage.setItem(localStorageName, JSON.stringify([]))
-      return [];
-    }
-    else {
-      return JSON.parse(getData);
-    }
-  });
-
-  const addTask = (new_task : Task)=> {
-    const result = TaskSchema.parse(new_task);
-    const newState = [...taskList];
-    newState.push(result);
-    setTaskList(newState);
-  }
-
-  // useMemo(() => {
-  //     const getData = localStorage.getItem(localStorageName);
-  //     if (getData == null){
-  //       localStorage.setItem(localStorageName, JSON.stringify([]))
-  //       setTaskList([])
-  //     }
-  //     else {
-  //       setTaskList(JSON.parse(getData));
-  //     }
-  //   }, [])
-  //
-
-  useEffect(() => {
-    localStorage.setItem(localStorageName, JSON.stringify(taskList));
-  },[taskList])
-
   return (
-    <TaskManagerContext.Provider value={taskList}>
+    // <TaskManagerContext.Provider value={taskList}>
       <BrowserRouter>
         <Routes>
           <Route path={"/"} element={<HeaderBar/>}>
-            <Route index={true} element={<TaskHome onAddTask={addTask}/>} />
-            <Route path={"/archived"} element={<></>} />
-            <Route path={"/analysis"} element={<></>} />
+            <Route index={true} element={<TaskHome/>} />
+            <Route path={"/archived"} element={<ArchivedTasks/>} />
+            <Route path={"/random"} element={<RandomStuff/>}/>
           </Route>
         </Routes>
       </BrowserRouter>
-    </TaskManagerContext.Provider>
+    // </TaskManagerContext.Provider>
   )
 }
 

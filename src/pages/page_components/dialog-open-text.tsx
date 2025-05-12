@@ -2,19 +2,24 @@ import { Dialog } from "@radix-ui/themes";
 import {Button} from "@radix-ui/themes";
 import '@/index.css'
 
-function DialogOpenText(props) {
+interface DialogOpenProps {
+  children: any,
+  innerElement : any,
+  title : string,
+  description? : string,
+}
+
+function DialogOpen(props : DialogOpenProps) {
 
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        <Button onClick={() => console.log("hi")}>
-          Sample
-        </Button>
+        {props.innerElement}
       </Dialog.Trigger>
 
         <Dialog.Content>
-          <Dialog.Title>Title</Dialog.Title>
-          <Dialog.Description>Description</Dialog.Description>
+          <Dialog.Title>{props.title}</Dialog.Title>
+          <Dialog.Description>{props.description}</Dialog.Description>
             {props.children}
           <Dialog.Close>
             <Button>
@@ -26,4 +31,4 @@ function DialogOpenText(props) {
     </Dialog.Root>)
 }
 
-export default DialogOpenText
+export default DialogOpen

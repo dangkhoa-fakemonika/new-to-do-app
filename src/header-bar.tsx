@@ -12,13 +12,13 @@ function HeaderBar() {
         <TabNav.Root>
           <TabNav.Link href="/" active={page === "/"} >Home</TabNav.Link>
           <TabNav.Link href="/archived" active={page === "/archived"}>Archived</TabNav.Link>
-          <TabNav.Link href="/analysis" active={page === "/analysis"}>Analysis</TabNav.Link>
+          <TabNav.Link href="/random" active={page === "/random"}>Random Stuff</TabNav.Link>
         </TabNav.Root>
 
       </Flex>
 
       <Flex justify={"end"} gap={"2"} direction={"row"}>
-        <Button>Clear Data</Button>
+        <Button onClick={() => {localStorage.clear(); window.location.reload();}}>Clear Data</Button>
         <Button>Do something</Button>
       </Flex>
     </Flex>

@@ -14,3 +14,15 @@ export function useTaskManagerContext() {
   return context;
 }
 
+export const TaskSearchContext = createContext<string | undefined>(undefined);
+
+export function useTaskSearchContext() {
+  const context = useContext(TaskSearchContext);
+
+  if (context === undefined){
+    throw Error("Nothing");
+  }
+
+  return context;
+}
+

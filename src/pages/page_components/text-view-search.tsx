@@ -1,14 +1,13 @@
 import {IconButton, TextField} from "@radix-ui/themes";
 import {DotsHorizontalIcon, MagnifyingGlassIcon} from "@radix-ui/react-icons";
+import {useState} from "react";
 
-interface SearchProps {
-  onChange : (value: string) => void;
-}
+function SearchTextView() {
 
-function SearchTextView({onChange} : SearchProps) {
+  const [textField, setTextField] = useState("");
 
   return (
-    <TextField.Root placeholder="Search a task…" size="3" onChange={event => {onChange(event.target.value)}}>
+    <TextField.Root placeholder="Search a task…" size="3" value={textField} onChange={event => {setTextField(event.target.value)}}>
       <TextField.Slot>
         <MagnifyingGlassIcon height="16" width="16" />
       </TextField.Slot>

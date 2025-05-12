@@ -5,7 +5,8 @@ import type {Task} from "@/data_classes/Task-class.ts";
 // import {useTaskManagerContext} from "@/context.ts";
 
 interface AddTaskBodyProps {
-  onAddTask: (data: Task) => void
+  onAddTask: (data: Task, action? : "new" | "update" | "delete") => void
+  taskData? : Task
 }
 
 function AddTaskBody(props: AddTaskBodyProps) {
@@ -19,15 +20,23 @@ function AddTaskBody(props: AddTaskBodyProps) {
   // const taskList = useTaskManagerContext();
 
   const onSubmit: SubmitHandler<Task> = (data) => {
-    props.onAddTask(data);
-    reset();
+    if (props.taskData === undefined){
+      props.onAddTask(data, "new");
+      reset();
+    }
+    else {
+      props.onAddTask({...props.taskData, task_name: data.task_name, task_description: data.task_description}, "update");
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex gap={"2"} direction={"column"}>
-        <TextField.Root placeholder="Task Name" {...register("task_name", {required: true})} />
-        <TextField.Root placeholder="Task Description" {...register("task_description")} type={"text"}/>
+        <Text>Task name</Text>
+        <TextField.Root placeholder="Task Name" defaultValue={props.taskData?.task_name} {...register("task_name", {required: true})} />
+        <Text>Task description</Text>
+        <TextField.Root placeholder="Task Description" defaultValue={props.taskData?.task_description} {...register("task_description")} type={"text"}/>
+        <Text>Deadline</Text>
         <TextField.Root placeholder="Date" {...register("task_date")}
                         type={"date"}/>
 
