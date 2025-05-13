@@ -1,5 +1,5 @@
 import {createContext, useContext} from "react";
-import type {Task} from "@/data_classes/Task-class.ts";
+import type {Task} from "@/classes/Task-class.ts";
 
 export const TaskManagerContext = createContext<Task[] | undefined>(undefined);
 

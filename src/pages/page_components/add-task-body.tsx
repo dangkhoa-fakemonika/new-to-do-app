@@ -1,6 +1,5 @@
-import {Button, Flex, Text, TextField} from "@radix-ui/themes";
 import {useForm, type SubmitHandler} from "react-hook-form"
-import type {Task} from "@/data_classes/Task-class.ts";
+import type {Task} from "@/classes/Task-class.ts";
 
 // import {useTaskManagerContext} from "@/context.ts";
 
@@ -31,18 +30,18 @@ function AddTaskBody(props: AddTaskBodyProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Flex gap={"2"} direction={"column"}>
-        <Text>Task name</Text>
-        <TextField.Root placeholder="Task Name" defaultValue={props.taskData?.task_name} {...register("task_name", {required: true})} />
-        <Text>Task description</Text>
-        <TextField.Root placeholder="Task Description" defaultValue={props.taskData?.task_description} {...register("task_description")} type={"text"}/>
-        <Text>Deadline</Text>
-        <TextField.Root placeholder="Date" {...register("task_date")}
-                        type={"date"}/>
+      <div className={"flex flex-col gap-2 w-[350px]"}>
+        <label>Task name</label>
+        <input className={"px-2 py-1 border-2 w-full border-black-500"} placeholder="Task Name" defaultValue={props.taskData?.task_name} {...register("task_name", {required: true})} type={"text"} />
 
-        {(errors.task_name || errors.task_name) && <Text>This field is required</Text>}
-          <Button type={"submit"}>Add</Button>
-      </Flex>
+        {(errors.task_name) && <span className={"text-red-400"}>Please enter a name for the task</span>}
+        <label>Task description</label>
+        <input className={"px-2 py-1 border-2 w-full border-black-500"} placeholder="Task Description" defaultValue={props.taskData?.task_description} {...register("task_description")} type={"text"}/>
+        <label>Deadline</label>
+        <input className={"px-2 py-1 border-2 w-full border-black-500"} placeholder="Date" {...register("task_date", {required: true})} type={"date"}/>
+        {(errors.task_date) && <span className={"text-red-400"}>Please enter a date</span>}
+        <button className={"text-center bg-blue-400 p-1 rounded text-white font-medium"} type={"submit"}>Add</button>
+      </div>
     </form>
   )
 }

@@ -1,11 +1,10 @@
-import {Table} from "@radix-ui/themes";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable
 } from "@tanstack/react-table";
-import type {Task} from "@/data_classes/Task-class.ts";
+import type {Task} from "@/classes/Task-class.ts";
 
 function ArchivedTasks(){
   let archivedData;
@@ -57,31 +56,35 @@ function ArchivedTasks(){
 
   return (
     <>
-      <Table.Root>
-        <Table.Header>
-          {taskTable.getHeaderGroups().map(headerGroup => (
-            <Table.Row key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <Table.ColumnHeaderCell key={header.id}>
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                </Table.ColumnHeaderCell>
-              ))}
-            </Table.Row>
-          ))}
-        </Table.Header>
+      <table className={"w-2/3 mx-auto content-center"}>
+        <thead className={""}>
+        {taskTable.getHeaderGroups().map(headerGroup => (
+          <tr key={headerGroup.id} className={"border border-gray-400 *:py-2"}>
+            {headerGroup.headers.map(header => (
+              <th key={header.id}>
+                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+              </th>
+            ))}
+          </tr>
+        ))}
+        </thead>
 
-        <Table.Body>
-          {taskTable.getRowModel().rows.map(row => (
-              <Table.Row key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <Table.Cell key={cell.id}>
+        <tbody className={"w-full"}>
+        {taskTable.getRowModel().rows.map(row => (
+          <tr key={row.id} className={"*:py-2 *:border-b hover:rounded hover:bg-gray-100"}>
+            {row.getVisibleCells().map(cell => (
+              <td key={cell.id}>
+                {
+                  <div className={"w-full"}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Table.Cell>
-                ))}
-              </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+                  </div>
+                }
+              </td>
+            ))}
+          </tr>
+        ))}
+        </tbody>
+      </table>
     </>
   )
 }

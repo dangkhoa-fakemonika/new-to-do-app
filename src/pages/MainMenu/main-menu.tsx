@@ -1,21 +1,29 @@
-import TaskTable from "./page_components/task-table.tsx";
-import {type Task, TaskSchema} from "@/data_classes/Task-class.ts";
-import {TaskManagerContext} from "@/context.ts";
+import TaskTable from "./MainMenuComponents/task-table.tsx";
+import {type Task, TaskSchema} from "@/classes/Task-class.ts";
+import {TaskManagerContext} from "@/globals/context.ts";
 import {useEffect, useState} from "react";
+import {Spinner} from "@radix-ui/themes";
 
 
 function TaskHome() {
   const localStorageName = "to_do_list_data";
   const archivedStorageName = "archived_data";
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [taskList, setTaskList] = useState<Task[]>(() => {
+    setIsLoading(true);
     const getData = localStorage.getItem(localStorageName);
+    let returnData;
     if (getData == null){
       localStorage.setItem(localStorageName, JSON.stringify([]))
-      return [];
+      returnData = [];
     }
     else {
-      return JSON.parse(getData);
+      returnData = JSON.parse(getData);
     }
+
+    new Promise(r => setTimeout(r, 2000)).then(() => {setIsLoading(false)});
+    // setIsLoading(false);
+    return returnData;
   });
 
   const addTask = (new_task : Task | Task[], action : "new" | "update" | "delete" | "archive" = "new")=> {
@@ -71,11 +79,12 @@ function TaskHome() {
 
   return (<>
     <TaskManagerContext.Provider value={taskList}>
-      {/*<SearchTextView changeFilter={(text : string) => {console.log(text); setFilterWord(text)}}/>*/}
-      {/*<TaskSearchContext.Provider value={filterWord}>*/}
-      {/*  <HomeToolBar onAddTask={props.onAddTask}/>*/}
+      {isLoading ?
+        <div className={"flex flex-row gap-2 m-auto w-full h-full text-center items-center justify-center"}>
+            Loading data, please wait <Spinner/>
+        </div> :
         <TaskTable onAddTask={addTask}/>
-      {/*</TaskSearchContext.Provider>*/}
+      }
     </TaskManagerContext.Provider>
   </>)
 }

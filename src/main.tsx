@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client'
-import {Container, Theme} from "@radix-ui/themes"
+import {Theme} from "@radix-ui/themes"
 import './index.css'
 import App from './App.tsx'
 
@@ -9,9 +9,9 @@ if (root_element != null){
   const root = ReactDOM.createRoot(root_element);
   root.render(
     <Theme>
-      <Container>
+      <div className={"bg-white px-6 py-2"}>
         <App/>
-      </Container>
+      </div>
     </Theme>
   )
 }
