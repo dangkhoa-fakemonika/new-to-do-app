@@ -34,10 +34,11 @@ function TaskHome() {
       }
     }
     else if (action === "update"){
-      newState.map((task) => {
-        const result = TaskSchema.parse(new_task);
-        if (task.task_id === result.task_id)
-          return {...result};
+      const result = TaskSchema.parse(new_task);
+      newState = newState.map((task) => {
+        if (task.task_id === result.task_id){
+          return result;
+        }
         else
           return task;
       })
@@ -63,6 +64,7 @@ function TaskHome() {
         localStorage.setItem(archivedStorageName, JSON.stringify(tempData));
       }
     }
+
     setTaskList(newState);
   }, [taskList]);
 

@@ -25,7 +25,7 @@ function HeaderBar() {
       <div className={"flex flex-row gap-2 justify-end"}>
         <nav className={"flex flex-row justify-between"}>
         {pages.map(pageInfo => (
-          <a className={`inline-block text-center content-center p-4 font-medium h-fit text-[0.9em] ${page === pageInfo.path ? "bg-blue-400 text-white" : "hover:bg-blue-50 bg-white text-black"}`} href={pageInfo.path}>{pageInfo.name}</a>
+          <a key={pageInfo.path} className={`inline-block text-center content-center p-4 font-medium h-fit text-[0.9em] ${page === pageInfo.path ? "bg-blue-400 text-white" : "hover:bg-blue-50 bg-white text-black"}`} href={pageInfo.path}>{pageInfo.name}</a>
         ))}
         </nav>
       </div>

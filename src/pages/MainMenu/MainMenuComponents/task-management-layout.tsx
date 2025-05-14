@@ -17,6 +17,7 @@ import TaskTable from "@/pages/MainMenu/MainMenuComponents/task-table.tsx";
 import {Spinner} from "@radix-ui/themes";
 import TaskInfo from "@/pages/MainMenu/MainMenuComponents/task-info.tsx";
 import TaskTableHeader from "@/pages/MainMenu/MainMenuComponents/task-table-header.tsx";
+import EditTaskBody from "@/pages/MainMenu/MainMenuComponents/edit-task-body.tsx";
 
 interface TaskTableProps {
   updateTask: (task: Task | Task[], action?: "new" | "update" | "delete" | "archive") => void,
@@ -26,13 +27,18 @@ function TaskManagementLayout(props: TaskTableProps) {
   const taskList = useTaskManagerContext();
   const taskColumnHelper = createColumnHelper<Task>();
   const [filterWord, setFilterWord] = useState<string>("");
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filterStatus, setFilterStatus] = useState<string>("All");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedTask, setSelectedTask] = useState<Task>();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [isEditing, setIsEditing] = useState(false);
 
-  new Promise(r => setTimeout(r, 2000)).then(() => {setIsLoading(false)});
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  new Promise(r => setTimeout(r, 2000)).then(() => {
+    setIsLoading(false)
+  });
 
   useMemo(() => {
     setColumnFilters(
@@ -52,56 +58,68 @@ function TaskManagementLayout(props: TaskTableProps) {
     )
   }, [filterStatus])
 
-  const getSortingState = useCallback((id : string) => {
+  useMemo(() => {
+    setIsEditing(false);
+  }, [selectedTask])
+
+  const getSortingState = useCallback((id: string) => {
     const sortResult = sorting.find(s => s.id === id);
     return sortResult === undefined ? "none" : sortResult.desc ? "desc" : "asc";
-  },[sorting])
+  }, [sorting])
 
-  const toggleSorting = useCallback((id : string) => {
+  const toggleSorting = useCallback((id: string) => {
     const sortingState = getSortingState(id);
 
     const sortingMap = {
-      "none" : "asc",
-      "asc" : "desc",
-      "desc" : "none"
+      "none": "asc",
+      "asc": "desc",
+      "desc": "none"
     }
 
     const desc = sortingMap[sortingState];
     setSorting(prevState => {
       return desc !== "none" ?
-       prevState.filter(f => f.id !== id).concat({
-        id : id,
-        desc : desc === "desc"
-      }) : prevState.filter(f => f.id !== id)
+        prevState.filter(f => f.id !== id).concat({
+          id: id,
+          desc: desc === "desc"
+        }) : prevState.filter(f => f.id !== id)
     })
   }, [getSortingState]);
 
   const taskColumns = useMemo(() => [
     taskColumnHelper.accessor('task_name', {
-      header: () => (<TaskTableHeader onClick={() => {toggleSorting("task_name")}} state={getSortingState("task_name")}>Name</TaskTableHeader>),
+      header: () => (<TaskTableHeader onClick={() => {
+        toggleSorting("task_name")
+      }} state={getSortingState("task_name")}>Name</TaskTableHeader>),
       cell: info => info.getValue(),
       footer: info => info.column.id
     }),
 
     taskColumnHelper.accessor('task_created', {
-      header: () => (<TaskTableHeader onClick={() => {toggleSorting("task_created")}} state={getSortingState("task_created")}>Created On</TaskTableHeader>),
+      header: () => (<TaskTableHeader onClick={() => {
+        toggleSorting("task_created")
+      }} state={getSortingState("task_created")}>Created On</TaskTableHeader>),
       cell: info => info.getValue(),
       footer: info => info.column.id
     }),
 
     taskColumnHelper.accessor('task_date', {
-      header: () => (<TaskTableHeader onClick={() => {toggleSorting("task_date")}} state={getSortingState("task_date")}>Deadline</TaskTableHeader>),
+      header: () => (<TaskTableHeader onClick={() => {
+        toggleSorting("task_date")
+      }} state={getSortingState("task_date")}>Deadline</TaskTableHeader>),
       cell: info => info.getValue(),
       footer: info => info.column.id
     }),
 
     taskColumnHelper.accessor('task_status', {
-      header: () => (<TaskTableHeader onClick={() => {toggleSorting("task_status")}} state={getSortingState("task_status")}>Status</TaskTableHeader>),
+      header: () => (<TaskTableHeader onClick={() => {
+        toggleSorting("task_status")
+      }} state={getSortingState("task_status")}>Status</TaskTableHeader>),
       cell: info => <div className={`rounded px-2 py-0.5 ${
         info.getValue() === "Finished" ? "bg-green-300" :
-        info.getValue() === "Expired" ? "bg-red-300" :
-        info.getValue() === "On Progress" ? "bg-yellow-300" :
-          "bg-purple-300"
+          info.getValue() === "Expired" ? "bg-red-300" :
+            info.getValue() === "On Progress" ? "bg-yellow-300" :
+              "bg-purple-300"
       } w-fit`}>{info.getValue()}
       </div>,
       footer: info => info.column.id
@@ -114,13 +132,13 @@ function TaskManagementLayout(props: TaskTableProps) {
       data: taskList,
       columns: taskColumns,
       state: {
-        columnFilters : columnFilters,
-        sorting : sorting
+        columnFilters: columnFilters,
+        sorting: sorting
       },
       onSortingChange: setSorting,
       getFilteredRowModel: getFilteredRowModel(),
       getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel : getSortedRowModel(),
+      getSortedRowModel: getSortedRowModel(),
       enableMultiRowSelection: true,
       // manualFiltering: true,
     });
@@ -136,7 +154,7 @@ function TaskManagementLayout(props: TaskTableProps) {
     console.log(selectedTasks);
   }
 
-  const selectTask = (task : Task) => {
+  const selectTask = (task: Task) => {
     setSelectedTask(task);
   }
 
@@ -154,9 +172,9 @@ function TaskManagementLayout(props: TaskTableProps) {
 
       <div className={"flex flex-row gap-2 justify-between my-2"}>
         <div className={"flex flex-row justify-start gap-2"}>
-          <PopOverButton trigger={<button
+          <PopOverButton trigger={<div
             className={"flex flex-row items-center content-center gap-2 bg-blue-400 text-white py-1 px-3 font-medium rounded hover:cursor-pointer"}>
-            <PlusIcon/> Add a task</button>}>
+            <PlusIcon/> Add a task</div>}>
             <AddTaskBody onAddTask={props.updateTask}/>
           </PopOverButton>
           <button
@@ -178,7 +196,8 @@ function TaskManagementLayout(props: TaskTableProps) {
         <div className={"flex flex-row gap-2 justify-end"}>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-              <div className={"flex flex-row items-center content-center gap-2 bg-blue-700 text-white py-1 px-3 font-medium rounded disabled:bg-gray-400 hover:cursor-pointer"}>
+              <div
+                className={"flex flex-row items-center content-center gap-2 bg-blue-700 text-white py-1 px-3 font-medium rounded disabled:bg-gray-400 hover:cursor-pointer"}>
                 Status
               </div>
             </DropdownMenu.Trigger>
@@ -203,18 +222,42 @@ function TaskManagementLayout(props: TaskTableProps) {
 
       <div>
         {
-        isLoading ?
-        <div className={"flex flex-row gap-2 m-auto w-full h-full text-center items-center justify-center"}>
-          Loading data, please wait <Spinner/>
-        </div> :
-        <div className={"grid grid-cols-3 gap-2"}>
-          <div className={"col-span-2"}>
-            <TaskTable taskTable={taskTable} updateTask={props.updateTask} selectTask={selectTask} sortingHandle={toggleSorting}/>
-          </div>
-          <TaskInfo taskInfo={selectedTask}/>
-
-        </div>
-      }
+          isLoading ?
+            <div className={"flex flex-row gap-2 m-auto w-full h-full text-center items-center justify-center"}>
+              Loading data, please wait <Spinner/>
+            </div> :
+            <div className={"grid grid-cols-3 gap-2"}>
+              <div className={"col-span-2"}>
+                <TaskTable taskTable={taskTable} updateTask={props.updateTask} selectTask={selectTask}
+                           sortingHandle={toggleSorting}/>
+              </div>
+              {
+                selectedTask ? !isEditing ?
+                    <div className={"h-fit flex flex-col"}>
+                      <TaskInfo taskInfo={selectedTask} updateTask={props.updateTask}/>
+                      <button onClick={() => {
+                        setIsEditing(prevState => !prevState)
+                      }}
+                              className={"text-center my-1 py-2 w-full bg-blue-400 rounded-lg text-white font-medium shadow cursor-pointer"}>
+                        Edit Task Info
+                      </button>
+                    </div> :
+                    <div className={"h-fit flex flex-col"}>
+                      <EditTaskBody updateTask={props.updateTask} taskData={selectedTask}/>
+                      <button onClick={() => {
+                        setIsEditing(prevState => !prevState)
+                      }}
+                              className={"text-center my-1 py-2 w-full bg-red-400 rounded-lg text-white font-medium shadow cursor-pointer"}>
+                        Cancel Edit
+                      </button>
+                    </div> :
+                  <div
+                    className={"h-fit flex flex-col text-center border border-gray-200 rounded-lg p-2 w-full shadow"}>
+                    Select a task to see it's info.
+                  </div>
+              }
+            </div>
+        }
       </div>
     </div>
   );

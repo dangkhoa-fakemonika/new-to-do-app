@@ -29,6 +29,7 @@ function TaskTable(props: TaskTableProps) {
               <input type={"checkbox"}
                      checked={props.taskTable.getIsAllRowsSelected()}
                      onClick={props.taskTable.getToggleAllRowsSelectedHandler()}
+                     onChange={props.taskTable.getToggleAllRowsSelectedHandler()}
               />
             </th>
             {headerGroup.headers.map(header => (
@@ -50,6 +51,7 @@ function TaskTable(props: TaskTableProps) {
                      checked={row.getIsSelected()}
                      disabled={!row.getCanSelect()}
                      onClick={row.getToggleSelectedHandler()}
+                     onChange={row.getToggleSelectedHandler()}
               />
             </td>
             {row.getVisibleCells().map(cell => (
