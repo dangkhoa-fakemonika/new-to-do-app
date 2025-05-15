@@ -1,8 +1,8 @@
 import ArchivedTable from "@/pages/Archived/ArchivedComponents/archived-table.tsx";
-import {useState} from "react";
+import {type ReactNode, useState} from "react";
 import {Spinner} from "@radix-ui/themes";
 
-function ArchivedTasks(){
+function ArchivedTasks() : ReactNode {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   new Promise(r => setTimeout(r, 2000)).then(() => {setIsLoading(false)});

@@ -1,28 +1,14 @@
 import {createContext, useContext} from "react";
-import type {Task} from "@/classes/Task-class.ts";
+import type {TaskController} from "@/services/services.ts";
 
-export const TaskManagerContext = createContext<Task[] | undefined>(undefined);
+export const TaskControllerContext = createContext<TaskController | undefined>(undefined);
 
-
-export function useTaskManagerContext() {
-  const context = useContext(TaskManagerContext);
+export function useTaskControllerContext(){
+  const context = useContext(TaskControllerContext);
 
   if (context === undefined){
-    throw Error("Nothing");
+    throw Error("No task controller");
   }
 
   return context;
 }
-
-export const TaskSearchContext = createContext<string | undefined>(undefined);
-
-export function useTaskSearchContext() {
-  const context = useContext(TaskSearchContext);
-
-  if (context === undefined){
-    throw Error("Nothing");
-  }
-
-  return context;
-}
-

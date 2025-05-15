@@ -1,5 +1,5 @@
 import {DropdownMenu} from "radix-ui";
-import {useTaskManagerContext} from "@/globals/context.ts";
+import {useTaskControllerContext,} from "@/globals/context.ts";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -9,22 +9,17 @@ import {
   type SortingState, getSortedRowModel
 } from "@tanstack/react-table";
 import type {Task} from "@/classes/Task-class.ts";
-import {useCallback, useMemo, useState} from "react";
-import {MagnifyingGlassIcon, PlusIcon, CheckIcon} from "@radix-ui/react-icons";
+import {type ReactNode, useCallback, useMemo, useState} from "react";
+import {MagnifyingGlassIcon, PlusIcon, CheckIcon, Cross1Icon} from "@radix-ui/react-icons";
 import PopOverButton from "@/components/pop-over-button.tsx";
 import AddTaskBody from "@/pages/MainMenu/MainMenuComponents/add-task-body.tsx";
-import TaskTable from "@/pages/MainMenu/MainMenuComponents/task-table.tsx";
-import {Spinner} from "@radix-ui/themes";
+import TaskTable from "@/pages/MainMenu/MainMenuComponents/TaskTable/task-table.tsx";
 import TaskInfo from "@/pages/MainMenu/MainMenuComponents/task-info.tsx";
-import TaskTableHeader from "@/pages/MainMenu/MainMenuComponents/task-table-header.tsx";
+import TaskTableHeader from "@/pages/MainMenu/MainMenuComponents/TaskTable/task-table-header.tsx";
 import EditTaskBody from "@/pages/MainMenu/MainMenuComponents/edit-task-body.tsx";
+import LoadingTaskTable from "@/pages/MainMenu/MainMenuComponents/TaskTable/loading-task-table.tsx";
 
-interface TaskTableProps {
-  updateTask: (task: Task | Task[], action?: "new" | "update" | "delete" | "archive") => void,
-}
-
-function TaskManagementLayout(props: TaskTableProps) {
-  const taskList = useTaskManagerContext();
+function TaskManagementLayout(): ReactNode {
   const taskColumnHelper = createColumnHelper<Task>();
   const [filterWord, setFilterWord] = useState<string>("");
 
@@ -36,7 +31,10 @@ function TaskManagementLayout(props: TaskTableProps) {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  new Promise(r => setTimeout(r, 2000)).then(() => {
+  const myTaskController = useTaskControllerContext();
+  const taskList = myTaskController.taskList;
+
+  new Promise(r => setTimeout(r, 4000)).then(() => {
     setIsLoading(false)
   });
 
@@ -115,7 +113,7 @@ function TaskManagementLayout(props: TaskTableProps) {
       header: () => (<TaskTableHeader onClick={() => {
         toggleSorting("task_status")
       }} state={getSortingState("task_status")}>Status</TaskTableHeader>),
-      cell: info => <div className={`rounded px-2 py-0.5 ${
+      cell: info => <div className={`rounded px-2 py-0.5 whitespace-nowrap ${
         info.getValue() === "Finished" ? "bg-green-300" :
           info.getValue() === "Expired" ? "bg-red-300" :
             info.getValue() === "On Progress" ? "bg-yellow-300" :
@@ -145,7 +143,7 @@ function TaskManagementLayout(props: TaskTableProps) {
 
   const deleteSelectedTask = () => {
     const selectedTasks: Task[] = taskTable.getSelectedRowModel().rows.map(row => row.original);
-    props.updateTask(selectedTasks, "delete");
+    myTaskController.changeTaskListAction(myTaskController.deleteTasks(selectedTasks));
     taskTable.toggleAllRowsSelected(false);
   }
 
@@ -174,22 +172,22 @@ function TaskManagementLayout(props: TaskTableProps) {
         <div className={"flex flex-row justify-start gap-2"}>
           <PopOverButton trigger={<div
             className={"flex flex-row items-center content-center gap-2 bg-blue-400 text-white py-1 px-3 font-medium rounded hover:cursor-pointer"}>
-            <PlusIcon/> Add a task</div>}>
-            <AddTaskBody onAddTask={props.updateTask}/>
+            <PlusIcon className={"my-2"}/> <div className={"hidden md:inline-block"}>Add a task</div></div>}>
+            <AddTaskBody/>
           </PopOverButton>
           <button
             className={"flex flex-row items-center content-center gap-2 bg-red-400 text-white py-1 px-3 font-medium rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:cursor-pointer"}
             disabled={!taskTable.getIsSomeRowsSelected() && !taskTable.getIsAllRowsSelected()} onClick={() => {
             deleteSelectedTask()
           }}>
-            Delete selected tasks
+            <Cross1Icon/> <div className={"hidden md:inline-block"}>Delete selected tasks</div>
           </button>
           <button
             className={"flex flex-row items-center content-center gap-2 bg-green-700 text-white py-1 px-3 font-medium rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:cursor-pointer"}
             disabled={!taskTable.getIsSomeRowsSelected() && !taskTable.getIsAllRowsSelected()} onClick={() => {
             debugPrint()
           }}>
-            Mark all selected tasks as done
+            <CheckIcon/> <div className={"hidden md:inline-block"}>Mark all selected tasks as done</div>
           </button>
         </div>
 
@@ -205,6 +203,7 @@ function TaskManagementLayout(props: TaskTableProps) {
 
               {["All", "On Progress", "Finished", "Expired"].map(option => (
                 <DropdownMenu.Item
+                  key={option}
                   className={"flex flex-row justify-between py-1 px-1.5 items-center hover:border-none hover:outline-none hover:ring-0 hover:bg-gray-200 hover:rounded"}
                   onClick={() => {
                     setFilterStatus(option)
@@ -223,37 +222,46 @@ function TaskManagementLayout(props: TaskTableProps) {
       <div>
         {
           isLoading ?
-            <div className={"flex flex-row gap-2 m-auto w-full h-full text-center items-center justify-center"}>
-              Loading data, please wait <Spinner/>
-            </div> :
-            <div className={"grid grid-cols-3 gap-2"}>
-              <div className={"col-span-2"}>
-                <TaskTable taskTable={taskTable} updateTask={props.updateTask} selectTask={selectTask}
+              <div className={"flex flex-col w-full md:grid md:grid-cols-3 md:gap-2"}>
+                <div className={"md:col-span-2"}>
+                  <LoadingTaskTable/>
+                </div>
+              </div>
+            :
+            <div className={"flex flex-col-reverse w-full md:grid md:grid-cols-3 gap-2"}>
+              <div className={"md:col-span-2 overflow-x-auto"}>
+                <TaskTable taskTable={taskTable} selectTask={selectTask}
                            sortingHandle={toggleSorting}/>
               </div>
               {
                 selectedTask ? !isEditing ?
                     <div className={"h-fit flex flex-col"}>
-                      <TaskInfo taskInfo={selectedTask} updateTask={props.updateTask}/>
+                      <TaskInfo taskInfo={selectedTask} />
                       <button onClick={() => {
                         setIsEditing(prevState => !prevState)
                       }}
                               className={"text-center my-1 py-2 w-full bg-blue-400 rounded-lg text-white font-medium shadow cursor-pointer"}>
                         Edit Task Info
                       </button>
+                      <button onClick={() => {
+                        setSelectedTask(undefined)
+                      }}
+                              className={"text-center my-1 py-2 w-full bg-red-400 rounded-lg text-white font-medium shadow cursor-pointer"}>
+                        Exit
+                      </button>
                     </div> :
                     <div className={"h-fit flex flex-col"}>
-                      <EditTaskBody updateTask={props.updateTask} taskData={selectedTask}/>
+                      <EditTaskBody taskData={selectedTask}/>
                       <button onClick={() => {
                         setIsEditing(prevState => !prevState)
                       }}
                               className={"text-center my-1 py-2 w-full bg-red-400 rounded-lg text-white font-medium shadow cursor-pointer"}>
-                        Cancel Edit
+                        Close Edit
                       </button>
                     </div> :
                   <div
                     className={"h-fit flex flex-col text-center border border-gray-200 rounded-lg p-2 w-full shadow"}>
-                    Select a task to see it's info.
+                    Select a task to see its info.
                   </div>
               }
             </div>

@@ -1,27 +1,30 @@
 import {flexRender, type Table} from "@tanstack/react-table";
 import {ContextMenu} from "radix-ui";
 import type {Task} from "@/classes/Task-class.ts";
+import type {ReactNode} from "react";
+import {useTaskControllerContext} from "@/globals/context.ts";
 
 interface TaskTableProps {
   taskTable: Table<Task>,
-  updateTask: (task: Task | Task[], action?: "new" | "update" | "delete" | "archive") => void,
   selectTask: (task: Task) => void,
   sortingHandle: (id: string, desc: boolean) => void
 }
 
-function TaskTable(props: TaskTableProps) {
+function TaskTable(props: TaskTableProps) : ReactNode {
+  const taskController = useTaskControllerContext();
+
   const changeStatus = (task: Task, newStatus: "On Progress" | "Finished" | "Expired") => {
     task.task_status = newStatus;
-    props.updateTask(task, "update");
+    taskController.changeTaskListAction(taskController.editTask(task));
   }
 
   const deleteTask = (task: Task) => {
-    props.updateTask(task, "delete");
+    taskController.changeTaskListAction(taskController.deleteTask(task));
   }
 
   return (
     <>
-      <table className={"w-full content-center"}>
+      <table className={"md:w-full w-2xl content-center"}>
         <thead className={""}>
         {props.taskTable.getHeaderGroups().map(headerGroup => (
           <tr key={headerGroup.id} className={"border border-gray-400 *:py-2"}>
@@ -33,7 +36,7 @@ function TaskTable(props: TaskTableProps) {
               />
             </th>
             {headerGroup.headers.map(header => (
-              <th key={header.id}>
+              <th key={header.id} className={"whitespace-nowrap"}>
                 {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
               </th>
             ))}
@@ -41,11 +44,11 @@ function TaskTable(props: TaskTableProps) {
         ))}
         </thead>
 
-        <tbody className={"w-full"}>
+        <tbody className={""}>
         {props.taskTable.getRowModel().rows.map(row => (
           <tr key={row.id} className={"*:py-2 *:border-b hover:rounded hover:bg-gray-100"} onClick={() => {
             props.selectTask(row.original)
-          }}>
+          }} >
             <td className={"text-center"}>
               <input type={"checkbox"}
                      checked={row.getIsSelected()}
@@ -64,7 +67,7 @@ function TaskTable(props: TaskTableProps) {
                       </div>
                     </ContextMenu.Trigger>
                     <ContextMenu.Portal>
-                      <ContextMenu.Content className={"flex flex-col w-fit bg-white z-45 shadow rounded p-2"}>
+                      <ContextMenu.Content className={"flex flex-col w-fit bg-white z-45 shadow rounded p-2 max-md:hidden"}>
                         <ContextMenu.Sub>
                           <ContextMenu.SubTrigger className={"py-1 px-2 hover:rounded hover:bg-gray-300"}>Mark
                             as</ContextMenu.SubTrigger>
@@ -87,7 +90,7 @@ function TaskTable(props: TaskTableProps) {
                             Delete
                           </ContextMenu.Item>
                           <ContextMenu.Item onClick={() => {
-                            props.updateTask(row.original, "archive")
+                            taskController.changeTaskListAction(taskController.archiveTask(row.original));
                           }}>
                             Move to Archived
                           </ContextMenu.Item>

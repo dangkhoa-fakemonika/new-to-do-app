@@ -1,7 +1,8 @@
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import type {Task} from "@/classes/Task-class.ts";
+import type {ReactNode} from "react";
 
-function ArchivedTable() {
+function ArchivedTable(): ReactNode {
   let archivedData;
   const archivedStorageName = "archived_data";
 

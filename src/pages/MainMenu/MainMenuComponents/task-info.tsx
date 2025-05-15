@@ -1,11 +1,11 @@
 import type {Task} from "@/classes/Task-class.ts";
+import type {ReactNode} from "react";
 
 interface TaskInfoProps {
-  taskInfo: Task,
-  updateTask: (data: Task, action?: "new" | "update" | "delete") => void
+  taskInfo: Task
 }
 
-function TaskInfo(props: TaskInfoProps) {
+function TaskInfo(props: TaskInfoProps) : ReactNode {
 
 
   return (

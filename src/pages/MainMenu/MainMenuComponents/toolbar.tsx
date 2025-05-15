@@ -4,12 +4,13 @@ import "@/index.css";
 import PopOverButton from "@/components/pop-over-button.tsx";
 import AddTaskBody from "@/pages/MainMenu/MainMenuComponents/add-task-body.tsx";
 import type {Task} from "@/classes/Task-class.ts";
+import type {ReactNode} from "react";
 
 interface HomeToolBarProps {
   onAddTask: (new_task: Task, action? : "new" | "update" | "delete") => void,
 }
 
-function HomeToolBar(props: HomeToolBarProps) {
+function HomeToolBar(props: HomeToolBarProps) : ReactNode {
 
   return (<>
     <Flex gap={"2"} justify={"start"} my={"2"}>

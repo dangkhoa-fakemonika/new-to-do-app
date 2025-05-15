@@ -1,15 +1,18 @@
 import {useForm, type SubmitHandler, Controller} from "react-hook-form"
 import type {Task} from "@/classes/Task-class.ts";
 import {RadioGroup} from "radix-ui";
+import type {ReactNode} from "react";
+import {useTaskControllerContext} from "@/globals/context.ts";
 
 // import {useTaskManagerContext} from "@/context.ts";
 
 interface EditTaskBodyProps {
-  updateTask: (data: Task, action?: "new" | "update" | "delete") => void
   taskData: Task
 }
 
-function EditTaskBody(props: EditTaskBodyProps) {
+function EditTaskBody(props: EditTaskBodyProps) : ReactNode {
+  const taskController = useTaskControllerContext();
+
   const {
     register,
     handleSubmit,
@@ -22,12 +25,12 @@ function EditTaskBody(props: EditTaskBodyProps) {
   })
 
   const onSubmit: SubmitHandler<Task> = (data) => {
-    props.updateTask({
+    taskController.changeTaskListAction(taskController.editTask({
       ...props.taskData,
       task_name: data.task_name,
       task_description: data.task_description,
       task_status: data.task_status
-    }, "update");
+    }))
   };
 
   return (

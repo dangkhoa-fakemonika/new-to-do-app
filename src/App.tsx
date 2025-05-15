@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import TaskHome from "./pages/MainMenu/main-menu.tsx";
-import HeaderBar from "./layout/header-bar.tsx";
 import './index.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TaskHome from "@/pages/MainMenu/main-menu.tsx";
 import RandomStuff from "@/pages/RandomStuff/random-stuff.tsx";
 import ArchivedTasks from "@/pages/Archived/archived.tsx";
+import Layout from "@/layout/layout.tsx"
 
 function App() {
 
@@ -11,7 +11,7 @@ function App() {
     // <TaskManagerContext.Provider value={taskList}>
       <BrowserRouter>
         <Routes>
-          <Route path={"/"} element={<HeaderBar/>}>
+          <Route path={"/"} element={<Layout/>}>
             <Route index={true} element={<TaskHome/>} />
             <Route path={"/archived"} element={<ArchivedTasks/>} />
             <Route path={"/random"} element={<RandomStuff/>}/>

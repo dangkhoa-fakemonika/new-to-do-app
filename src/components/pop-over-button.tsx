@@ -1,11 +1,12 @@
 import {Popover} from "radix-ui";
+import {type ReactNode} from "react";;
 
 interface PopOverButtonProps{
-  trigger : any,
-  children: any,
+  trigger : ReactNode,
+  children: ReactNode,
 }
 
-function PopOverButton(props : PopOverButtonProps) {
+function PopOverButton(props : PopOverButtonProps) : ReactNode {
 
   return(
     <Popover.Root>
