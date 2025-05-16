@@ -1,6 +1,6 @@
-import ArchivedTable from "@/pages/archived/archived-components/archived-table.tsx";
 import {type ReactNode, useState} from "react";
 import {Spinner} from "@radix-ui/themes";
+import ArchivedTable from "@/pages/archived/archived-components/archived-table.tsx";
 
 function ArchivedTasks() : ReactNode {
   const [isLoading, setIsLoading] = useState<boolean>(true);
