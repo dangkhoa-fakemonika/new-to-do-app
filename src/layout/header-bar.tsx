@@ -1,9 +1,12 @@
 import {type ReactNode, useState} from "react";
 import PopOverButton from "@/components/pop-over-button.tsx";
 import {DotsVerticalIcon} from "@radix-ui/react-icons";
+import {Link} from "react-router-dom";
+// import { useNavigate, Link } from "react-router";
 
 function HeaderBar(): ReactNode {
   const [page] = useState(window.location.pathname);
+  // const navigate = useNavigate();
 
   const pages = [
     {
@@ -25,9 +28,9 @@ function HeaderBar(): ReactNode {
         <div className={"flex flex-row gap-2 justify-end"}>
           <nav className={"flex flex-row justify-between"}>
             {pages.map(pageInfo => (
-              <a key={pageInfo.path}
+              <Link key={pageInfo.path}
                  className={`inline-block text-center content-center p-4 font-medium h-fit text-[0.9em] ${page === pageInfo.path ? "bg-blue-400 text-white" : "hover:bg-blue-50 bg-white text-black"}`}
-                 href={pageInfo.path}>{pageInfo.name}</a>
+                   to={pageInfo.path} >{pageInfo.name}</Link>
             ))}
           </nav>
         </div>
