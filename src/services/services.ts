@@ -1,21 +1,25 @@
-import axios from "axios";
 import {type Task, TaskSchema} from "@/classes/Task-class.ts";
 import {type Dispatch, type SetStateAction} from "react";
+import axiosInstance from "@/services/axiosInstance.ts";
 
 class CommonAPIsController {
+
+  private getAxiosInstance;
+
   public constructor() {
+    this.getAxiosInstance = axiosInstance;
   }
 
   public async fetchCatQuote(): Promise<{ data: { fact: string } }> {
-    return await axios.get('https://catfact.ninja/fact');
+    return await this.getAxiosInstance.get('catfact.ninja/fact');
   }
 
   public async fetchJoke(): Promise<{ data: { setup: string, punchline: string } }> {
-    return await axios.get('https://official-joke-api.appspot.com/random_joke');
+    return await this.getAxiosInstance.get('official-joke-api.appspot.com/random_joke');
   }
 
   public async fetchDogImage(): Promise<{ data: { message: string } }> {
-    return await axios.get('https://dog.ceo/api/breeds/image/random');
+    return await this.getAxiosInstance.get('dog.ceo/api/breeds/image/random');
   }
 }
 
