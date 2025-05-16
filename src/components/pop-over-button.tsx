@@ -4,8 +4,8 @@ import {type Dispatch, type ReactNode, type SetStateAction} from "react";
 interface PopOverButtonProps{
   trigger : ReactNode,
   children: ReactNode,
-  open: boolean,
-  setOnOpen: Dispatch<SetStateAction<boolean>>
+  open?: boolean,
+  setOnOpen?: Dispatch<SetStateAction<boolean>>
 }
 
 function PopOverButton(props : PopOverButtonProps) : ReactNode {
