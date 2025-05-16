@@ -195,7 +195,11 @@ function TaskManagementLayout(): ReactNode {
                 <PlusIcon className={""}/>
               </div>
             } open={openAddDialog} setOnOpen={setOpenAddDialog}
-            title={"Add a Task"} description={"..."}
+            title={
+              <div className={"font-bold py-2"}>
+                Add a Task
+              </div>
+            }
             >
               <AddTaskBody parentState={setOpenAddDialog}/>
             </DialogButton>
