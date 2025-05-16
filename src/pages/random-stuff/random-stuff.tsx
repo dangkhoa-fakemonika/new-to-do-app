@@ -2,13 +2,13 @@ import {type ReactNode, useState} from "react";
 import {Spinner} from "@radix-ui/themes";
 import {InfoCircledIcon} from "@radix-ui/react-icons";
 import {CommonAPIsController} from "@/services/services.ts";
-import Button from "@/pages/RandomStuff/RandomStuffComponents/button.tsx";
+import Button from "@/pages/random-stuff/random-stuff-components/button.tsx";
 
 function RandomStuff() : ReactNode {
   const [catQuotes, setCatQuotes] = useState("Press the button to generate a cat fact");
   const [jokeSetup, setJokeSetup] = useState("Press the button to generate a joke");
   const [jokeDeliver, setJokeDeliver] = useState("The response will be shown here");
-  const [dogUrl, setDogUrl] = useState("");
+  const [dogUrl, setDogUrl] = useState<string | undefined>(undefined);
   const [isGeneratingCat, setCatGenerating] = useState(false);
   const [isGeneratingJoke, setJokeGenerating] = useState(false);
   const [isGeneratingDog, setDogGenerating] = useState(false);
@@ -69,7 +69,7 @@ function RandomStuff() : ReactNode {
         {!isGeneratingDog ? <div>Generate a dog image</div> : <Spinner className={"m-0.5"} size={"3"}/>}
       </Button>
 
-      <div hidden={dogUrl.length === 0} className={"flex aspect-square lg:w-1/6 md:w-1/2 sm:w-full rounded-lg border border-black items-center justify-center"}>
+      <div hidden={dogUrl === undefined || dogUrl.length === 0} className={"flex aspect-square lg:w-1/6 md:w-1/2 sm:w-full rounded-lg border border-black items-center justify-center"}>
         {
           !isGeneratingDog ?
           <img

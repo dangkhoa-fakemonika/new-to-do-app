@@ -1,9 +1,14 @@
 import {useForm, type SubmitHandler} from "react-hook-form"
 import {type Task} from "@/classes/Task-class.ts";
-import type {ReactNode} from "react";
+import type {Dispatch, ReactNode, SetStateAction} from "react";
 import {useTaskControllerContext} from "@/globals/context.ts";
 
-function AddTaskBody() : ReactNode {
+interface AddTaskBodyProps{
+  parentState? : Dispatch<SetStateAction<boolean>>
+}
+
+
+function AddTaskBody(props: AddTaskBodyProps) : ReactNode {
   const {
     register,
     handleSubmit,
@@ -16,12 +21,16 @@ function AddTaskBody() : ReactNode {
   const onSubmit: SubmitHandler<Task> = (data) => {
     // props.onAddTask(data);
     taskController.changeTaskListAction(taskController.addTask(data));
+    if (props.parentState !== undefined){
+      props.parentState(false);
+      // close
+    }
     reset();
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className={"flex flex-col gap-2 w-[350px]"}>
+    <form onSubmit={handleSubmit(onSubmit)} className={""}>
+      <div className={"flex flex-col gap-2 w-full lg:w-[250px]"}>
         <label>Task name</label>
         <input className={"px-2 py-1 border-2 w-full border-black-500"} placeholder="Task Name"  {...register("task_name", {required: true})} type={"text"} />
 

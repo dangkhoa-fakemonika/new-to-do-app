@@ -1,4 +1,4 @@
-import TaskManagementLayout from "./MainMenuComponents/task-management-layout.tsx";
+import TaskManagementLayout from "@/pages/main-menu/main-menu-components/task-management-layout.tsx";
 import {type Task} from "@/classes/Task-class.ts";
 import {TaskControllerContext} from "@/globals/context.ts";
 import {type ReactNode, useEffect, useState} from "react";

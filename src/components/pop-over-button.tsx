@@ -1,15 +1,16 @@
 import {Popover} from "radix-ui";
-import {type ReactNode} from "react";;
+import {type Dispatch, type ReactNode, type SetStateAction} from "react";
 
 interface PopOverButtonProps{
   trigger : ReactNode,
   children: ReactNode,
+  open: boolean,
+  setOnOpen: Dispatch<SetStateAction<boolean>>
 }
 
 function PopOverButton(props : PopOverButtonProps) : ReactNode {
-
   return(
-    <Popover.Root>
+    <Popover.Root open={props.open} onOpenChange={props.setOnOpen}>
       <Popover.Trigger>
           {props.trigger}
       </Popover.Trigger>

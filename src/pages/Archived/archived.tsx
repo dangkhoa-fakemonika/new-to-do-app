@@ -1,4 +1,4 @@
-import ArchivedTable from "@/pages/Archived/ArchivedComponents/archived-table.tsx";
+import ArchivedTable from "@/pages/archived/archived-components/archived-table.tsx";
 import {type ReactNode, useState} from "react";
 import {Spinner} from "@radix-ui/themes";
 

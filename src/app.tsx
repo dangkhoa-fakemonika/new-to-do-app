@@ -1,8 +1,8 @@
 import './index.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import TaskHome from "@/pages/MainMenu/main-menu.tsx";
-import RandomStuff from "@/pages/RandomStuff/random-stuff.tsx";
-import ArchivedTasks from "@/pages/Archived/archived.tsx";
+import TaskHome from "@/pages/main-menu/main-menu.tsx";
+import RandomStuff from "@/pages/random-stuff/random-stuff.tsx";
+import ArchivedTasks from "@/pages/archived/archived.tsx";
 import Layout from "@/layout/layout.tsx"
 
 function App() {

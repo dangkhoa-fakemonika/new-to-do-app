@@ -3,38 +3,53 @@ import {useTaskControllerContext,} from "@/globals/context.ts";
 import {
   createColumnHelper,
   getCoreRowModel,
-  getFilteredRowModel,
   useReactTable,
-  type ColumnFiltersState,
-  type SortingState, getSortedRowModel
+  type ColumnFiltersState, getFilteredRowModel,
+  type SortingState, getSortedRowModel,
+  type PaginationState, getPaginationRowModel
 } from "@tanstack/react-table";
 import type {Task} from "@/classes/Task-class.ts";
 import {type ReactNode, useCallback, useMemo, useState} from "react";
-import {MagnifyingGlassIcon, PlusIcon, CheckIcon, Cross1Icon} from "@radix-ui/react-icons";
+import {
+  MagnifyingGlassIcon,
+  PlusIcon,
+  CheckIcon,
+  Cross1Icon,
+  DoubleArrowLeftIcon,
+  ChevronLeftIcon, ChevronRightIcon, DoubleArrowRightIcon
+} from "@radix-ui/react-icons";
 import PopOverButton from "@/components/pop-over-button.tsx";
-import AddTaskBody from "@/pages/MainMenu/MainMenuComponents/add-task-body.tsx";
-import TaskTable from "@/pages/MainMenu/MainMenuComponents/TaskTable/task-table.tsx";
-import TaskInfo from "@/pages/MainMenu/MainMenuComponents/task-info.tsx";
-import TaskTableHeader from "@/pages/MainMenu/MainMenuComponents/TaskTable/task-table-header.tsx";
-import EditTaskBody from "@/pages/MainMenu/MainMenuComponents/edit-task-body.tsx";
-import LoadingTaskTable from "@/pages/MainMenu/MainMenuComponents/TaskTable/loading-task-table.tsx";
+import AddTaskBody from "@/pages/main-menu/main-menu-components/add-task-body.tsx";
+import TaskTable from "@/pages/main-menu/main-menu-components/task-table/task-table.tsx";
+import TaskInfo from "@/pages/main-menu/main-menu-components/task-info.tsx";
+import TaskTableHeader from "@/pages/main-menu/main-menu-components/task-table/task-table-header.tsx";
+import EditTaskBody from "@/pages/main-menu/main-menu-components/edit-task-body.tsx";
+import LoadingTaskTable from "@/pages/main-menu/main-menu-components/task-table/loading-task-table.tsx";
+import useDebounce from "@/hooks/useDebounce.ts";
+import DialogButton from "@/components/dialog-button.tsx";
 
 function TaskManagementLayout(): ReactNode {
   const taskColumnHelper = createColumnHelper<Task>();
-  const [filterWord, setFilterWord] = useState<string>("");
+  const [searchWord, setSearchWord] = useState<string>("");
+  const debouncedSearchWord = useDebounce(searchWord, 200);
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [selectedTask, setSelectedTask] = useState<Task>();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 5
+  })
   const [isEditing, setIsEditing] = useState(false);
-
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [openAddPopOver, setOpenAddPopOver] = useState(false);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const myTaskController = useTaskControllerContext();
   const taskList = myTaskController.taskList;
 
-  new Promise(r => setTimeout(r, 4000)).then(() => {
+  new Promise(r => setTimeout(r, 1000)).then(() => {
     setIsLoading(false)
   });
 
@@ -42,10 +57,10 @@ function TaskManagementLayout(): ReactNode {
     setColumnFilters(
       prevState => prevState.filter(f => f.id !== "task_name").concat({
         id: "task_name",
-        value: filterWord.trim()
+        value: debouncedSearchWord.trim()
       })
     )
-  }, [filterWord])
+  }, [debouncedSearchWord])
 
   useMemo(() => {
     setColumnFilters(
@@ -131,14 +146,17 @@ function TaskManagementLayout(): ReactNode {
       columns: taskColumns,
       state: {
         columnFilters: columnFilters,
-        sorting: sorting
+        sorting: sorting,
+        pagination : pagination
       },
       onSortingChange: setSorting,
-      getFilteredRowModel: getFilteredRowModel(),
+      onPaginationChange : setPagination,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      autoResetPageIndex: true,
       enableMultiRowSelection: true,
-      // manualFiltering: true,
     });
 
   const deleteSelectedTask = () => {
@@ -163,39 +181,66 @@ function TaskManagementLayout(): ReactNode {
         <MagnifyingGlassIcon height="16" width="16"/>
         <input
           className={"w-full form-input border-transparent focus:border-transparent focus:ring-0 'focus:border-none focus:outline-none"}
-          placeholder={"Enter task name..."} type={"text"} value={filterWord} onChange={event => {
-          setFilterWord(event.target.value);
+          placeholder={"Enter task name..."} type={"text"} value={searchWord} onChange={event => {
+          setSearchWord(event.target.value);
         }}/>
       </label>
 
       <div className={"flex flex-row gap-2 justify-between my-2"}>
         <div className={"flex flex-row justify-start gap-2"}>
-          <PopOverButton trigger={<div
-            className={"flex flex-row items-center content-center gap-2 bg-blue-400 text-white py-1 px-3 font-medium rounded hover:cursor-pointer"}>
-            <PlusIcon className={"my-2"}/> <div className={"hidden md:inline-block"}>Add a task</div></div>}>
-            <AddTaskBody/>
-          </PopOverButton>
-          <button
-            className={"flex flex-row items-center content-center gap-2 bg-red-400 text-white py-1 px-3 font-medium rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:cursor-pointer"}
-            disabled={!taskTable.getIsSomeRowsSelected() && !taskTable.getIsAllRowsSelected()} onClick={() => {
-            deleteSelectedTask()
-          }}>
-            <Cross1Icon/> <div className={"hidden md:inline-block"}>Delete selected tasks</div>
-          </button>
-          <button
-            className={"flex flex-row items-center content-center gap-2 bg-green-700 text-white py-1 px-3 font-medium rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:cursor-pointer"}
-            disabled={!taskTable.getIsSomeRowsSelected() && !taskTable.getIsAllRowsSelected()} onClick={() => {
-            debugPrint()
-          }}>
-            <CheckIcon/> <div className={"hidden md:inline-block"}>Mark all selected tasks as done</div>
-          </button>
+          <div className={"my-2 lg:hidden"}>
+            <DialogButton trigger={
+              <div
+                className={"flex flex-row items-center content-center py-3 px-3 gap-2 bg-blue-400 text-white  font-medium rounded hover:cursor-pointer"}>
+                <PlusIcon className={""}/>
+              </div>
+            } open={openAddDialog} setOnOpen={setOpenAddDialog}
+            title={"Add a Task"} description={"..."}
+            >
+              <AddTaskBody parentState={setOpenAddDialog}/>
+            </DialogButton>
+          </div>
+
+          <div className={"my-2 hidden lg:contents"}>
+            <PopOverButton
+              trigger={
+              <div className={"flex flex-row items-center content-center py-3 px-3 gap-2 bg-blue-400 text-white  font-medium rounded hover:cursor-pointer"}>
+                <PlusIcon className={""}/>
+                <div className={"hidden lg:inline-block"}>Add a task</div>
+              </div>
+            }
+              open={openAddPopOver} setOnOpen={setOpenAddPopOver}
+            >
+              <AddTaskBody parentState={setOpenAddPopOver}/>
+            </PopOverButton>
+          </div>
+
+
+          <div className={"py-2"}>
+            <button
+              className={"flex flex-row items-center content-center gap-2 bg-red-400 text-white py-3 px-3 font-medium rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:cursor-pointer"}
+              disabled={!taskTable.getIsSomeRowsSelected() && !taskTable.getIsAllRowsSelected()} onClick={() => {
+              deleteSelectedTask()
+            }}>
+              <Cross1Icon/> <div className={"hidden lg:inline-block"}>Delete selected tasks</div>
+            </button>
+          </div>
+          <div className={"py-2"}>
+            <button
+              className={"flex flex-row items-center content-center gap-2 bg-green-700 text-white py-3 px-3 font-medium rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:cursor-pointer"}
+              disabled={!taskTable.getIsSomeRowsSelected() && !taskTable.getIsAllRowsSelected()} onClick={() => {
+              debugPrint()
+            }}>
+              <CheckIcon/> <div className={"hidden lg:inline-block"}>Debug</div>
+            </button>
+          </div>
         </div>
 
         <div className={"flex flex-row gap-2 justify-end"}>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
               <div
-                className={"flex flex-row items-center content-center gap-2 bg-blue-700 text-white py-1 px-3 font-medium rounded disabled:bg-gray-400 hover:cursor-pointer"}>
+                className={"flex flex-row items-center content-center gap-2 bg-blue-400 text-white py-2 px-3 font-medium rounded hover:cursor-pointer"}>
                 Status
               </div>
             </DropdownMenu.Trigger>
@@ -222,21 +267,21 @@ function TaskManagementLayout(): ReactNode {
       <div>
         {
           isLoading ?
-              <div className={"flex flex-col w-full md:grid md:grid-cols-3 md:gap-2"}>
-                <div className={"md:col-span-2"}>
+              <div className={"flex flex-col w-full lg:grid lg:grid-cols-3 lg:gap-2"}>
+                <div className={"lg:col-span-2"}>
                   <LoadingTaskTable/>
                 </div>
               </div>
             :
-            <div className={"flex flex-col-reverse w-full md:grid md:grid-cols-3 gap-2"}>
-              <div className={"md:col-span-2 overflow-x-auto"}>
+            <div className={"flex flex-col-reverse w-full lg:grid lg:grid-cols-3 gap-2"}>
+              <div className={"lg:col-span-2 overflow-x-auto"}>
                 <TaskTable taskTable={taskTable} selectTask={selectTask}
                            sortingHandle={toggleSorting}/>
               </div>
               {
                 selectedTask ? !isEditing ?
                     <div className={"h-fit flex flex-col"}>
-                      <TaskInfo taskInfo={selectedTask} />
+                      <TaskInfo taskInfo={selectedTask}/>
                       <button onClick={() => {
                         setIsEditing(prevState => !prevState)
                       }}
@@ -264,6 +309,39 @@ function TaskManagementLayout(): ReactNode {
                     Select a task to see its info.
                   </div>
               }
+              <div className={"flex flex-row justify-center gap-3 items-center col-span-2"}>
+                <button
+                  className={"bg-blue-400 cursor-pointer disabled:bg-gray-400 rounded text-white p-2"}
+                  onClick={() => taskTable.firstPage()}
+                  disabled={!taskTable.getCanPreviousPage()}
+                >
+                  <DoubleArrowLeftIcon/>
+                </button>
+                <button
+                  className={"bg-blue-400 cursor-pointer disabled:bg-gray-400 rounded text-white p-2"}
+                  onClick={() => taskTable.previousPage()}
+                  disabled={!taskTable.getCanPreviousPage()}
+                >
+                  <ChevronLeftIcon/>
+                </button>
+                <div>
+                  Page <input className={"w-[2em]"} type={"text"} value={pagination.pageIndex + 1} onChange={event => {taskTable.setPageIndex(event.target.value.length === 0 ? 0 : parseInt(event.target.value) - 1)}}/> / {taskTable.getPageCount()}
+                </div>
+                <button
+                  className={"bg-blue-400 cursor-pointer disabled:bg-gray-400 rounded text-white p-2"}
+                  onClick={() => taskTable.nextPage()}
+                  disabled={!taskTable.getCanNextPage()}
+                >
+                  <ChevronRightIcon/>
+                </button>
+                <button
+                  className={"bg-blue-400 cursor-pointer disabled:bg-gray-400 rounded text-white p-2"}
+                  onClick={() => taskTable.lastPage()}
+                  disabled={!taskTable.getCanNextPage()}
+                >
+                  <DoubleArrowRightIcon/>
+                </button>
+              </div>
             </div>
         }
       </div>
