@@ -1,5 +1,5 @@
 import {createContext, useContext} from "react";
-import type {TaskController} from "@/services/services.ts";
+import type TaskController from "@/services/tasks.ts";
 
 export const TaskControllerContext = createContext<TaskController | undefined>(undefined);
 

@@ -1,7 +1,6 @@
 import {type ReactNode, useState} from "react";
-import {Spinner} from "@radix-ui/themes";
 import {InfoCircledIcon} from "@radix-ui/react-icons";
-import {CommonAPIsController} from "@/services/services.ts";
+import CommonAPIsController from "@/services/random-apis.ts";
 import Button from "@/pages/random-stuff/random-stuff-components/button.tsx";
 
 function RandomStuff() : ReactNode {
@@ -40,7 +39,7 @@ function RandomStuff() : ReactNode {
   return (
     <div className={"flex flex-col gap-2 justify-center items-center *:w-full"}>
       <Button onClick={generateCatQuotes} disabled={isGeneratingCat}>
-        {!isGeneratingCat ?<div>Generate a cat related fact</div> : <Spinner className={"m-0.5"} size={"3"}/>}
+        {!isGeneratingCat ?<div>Generate a cat related fact</div> : "..."}
       </Button>
       <div className={"flex flex-row items-center gap-2 py-3 px-4 bg-blue-100 text-blue-600 rounded-lg"}>
         <InfoCircledIcon/>
@@ -51,7 +50,7 @@ function RandomStuff() : ReactNode {
 
       <Button
         onClick={generateJoke} disabled={isGeneratingJoke}>
-        {!isGeneratingJoke ? <div>Generate a joke</div> : <Spinner className={"m-0.5"} size={"3"}/>}
+        {!isGeneratingJoke ? <div>Generate a joke</div> : "..."}
       </Button>
 
       <div className={"flex flex-row items-center gap-2 py-3 px-4 bg-yellow-100 text-yellow-600 rounded-lg"}>
@@ -66,7 +65,7 @@ function RandomStuff() : ReactNode {
       <hr/>
 
       <Button disabled={isGeneratingDog} onClick={generateDogImage}>
-        {!isGeneratingDog ? <div>Generate a dog image</div> : <Spinner className={"m-0.5"} size={"3"}/>}
+        {!isGeneratingDog ? <div>Generate a dog image</div> : "..."}
       </Button>
 
       <div hidden={dogUrl === undefined || dogUrl.length === 0} className={"flex aspect-square lg:w-1/6 md:w-1/2 sm:w-full rounded-lg border border-black items-center justify-center"}>
@@ -76,7 +75,7 @@ function RandomStuff() : ReactNode {
             src={dogUrl}
             alt=""
             className={"aspect-square w-full rounded-lg border border-black"}
-          /> : <Spinner size={"3"}/>
+          /> : "..."
         }
       </div>
     </div>

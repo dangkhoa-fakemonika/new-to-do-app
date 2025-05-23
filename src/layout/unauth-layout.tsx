@@ -1,11 +1,9 @@
-import HeaderBar from "@/layout/header-bar.tsx";
-import FooterBar from "@/layout/footer-bar.tsx";
-import {Outlet, useNavigate} from "react-router-dom";
 import {useLayoutEffect, useState} from "react";
+import {useNavigate, Outlet} from "react-router-dom";
 import AuthenticationClass from "@/services/authentication.ts";
 import {ReloadIcon} from "@radix-ui/react-icons";
 
-function Layout() {
+function UnauthLayout() {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -14,8 +12,8 @@ function Layout() {
     const auth = new AuthenticationClass();
     auth.getUserData().then(async (response) => {
       await new Promise(r => setTimeout(r, 1000));
-      if (response.status !== 200)
-        navigate("/login");
+      if (response.status === 200)
+        navigate("/dashboard");
       setLoading(false);
     })
   }, [navigate])
@@ -29,15 +27,8 @@ function Layout() {
           </div>
         </div>
       </div>
-      :
-    <div className={"flex flex-col justify-between px-6 py-2"}>
-      <div className={"flex flex-col"}>
-        <HeaderBar/>
-        <Outlet/>
-      </div>
-      <FooterBar/>
-    </div>
+      : <Outlet/>
   )
 }
 
-export default Layout
+export default UnauthLayout

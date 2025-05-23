@@ -180,7 +180,7 @@ function TaskManagementLayout(): ReactNode {
         className={"w-full flex flex-row gap-2 justify-center content-center items-center p-2 border-2 border-blue-100 rounded-lg focus:border-blue-300"}>
         <MagnifyingGlassIcon height="16" width="16"/>
         <input
-          className={"w-full form-input border-transparent focus:border-transparent focus:ring-0 'focus:border-none focus:outline-none"}
+          className={"w-full form-input border-transparent focus:border-transparent focus:ring-0 focus:border-none focus:outline-none"}
           placeholder={"Enter task name..."} type={"text"} value={searchWord} onChange={event => {
           setSearchWord(event.target.value);
         }}/>
@@ -191,7 +191,7 @@ function TaskManagementLayout(): ReactNode {
           <div className={"my-2 lg:hidden"}>
             <DialogButton trigger={
               <div
-                className={"flex flex-row items-center content-center py-3 px-3 gap-2 bg-blue-400 text-white  font-medium rounded hover:cursor-pointer"}>
+                className={"flex flex-row items-center content-center py-3 px-3 gap-2 bg-blue-400 text-white w-[80%] font-medium rounded hover:cursor-pointer"}>
                 <PlusIcon className={""}/>
               </div>
             } open={openAddDialog} setOnOpen={setOpenAddDialog}

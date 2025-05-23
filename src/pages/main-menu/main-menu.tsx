@@ -2,7 +2,7 @@ import TaskManagementLayout from "@/pages/main-menu/main-menu-components/task-ma
 import {type Task} from "@/classes/Task-class.ts";
 import {TaskControllerContext} from "@/globals/context.ts";
 import {type ReactNode, useEffect, useState} from "react";
-import {TaskController} from "@/services/services.ts";
+import TaskController from "@/services/tasks.ts";
 
 
 function TaskHome(): ReactNode {

@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from "zod/v4";
 
 export const TaskSchema = z.object({
   task_id: z.number().nonnegative().default(1).describe("ID of a task"),

@@ -1,27 +1,6 @@
 import {type Task, TaskSchema} from "@/classes/Task-class.ts";
-import {type Dispatch, type SetStateAction} from "react";
-import axiosInstance from "@/services/axiosInstance.ts";
+import type {Dispatch, SetStateAction} from "react";
 
-class CommonAPIsController {
-
-  private getAxiosInstance;
-
-  public constructor() {
-    this.getAxiosInstance = axiosInstance;
-  }
-
-  public async fetchCatQuote(): Promise<{ data: { fact: string } }> {
-    return await this.getAxiosInstance.get('catfact.ninja/fact');
-  }
-
-  public async fetchJoke(): Promise<{ data: { setup: string, punchline: string } }> {
-    return await this.getAxiosInstance.get('official-joke-api.appspot.com/random_joke');
-  }
-
-  public async fetchDogImage(): Promise<{ data: { message: string } }> {
-    return await this.getAxiosInstance.get('dog.ceo/api/breeds/image/random');
-  }
-}
 
 class TaskController {
   public readonly taskList: Task[];
@@ -99,7 +78,4 @@ class TaskController {
   }
 }
 
-export {CommonAPIsController, TaskController}
-
-
-
+export default TaskController;
